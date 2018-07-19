@@ -60,7 +60,7 @@ public:
 		std::lock_guard<std::mutex> lock(m_outputMutex);
 		auto file = getFile(data);
 		if (file) {
-			fprintf(file, "%s", s);
+			fprintf(file, "%s\n", s);
 			fflush(file);
 		}
 	}

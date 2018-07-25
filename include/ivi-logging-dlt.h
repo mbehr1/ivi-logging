@@ -6,6 +6,9 @@
 
 #include "ivi-logging-common.h"
 
+#define LOG_ENABLE_DLT_FOR_CONTEXT(context) std::get<1>(context.m_contexts).enable();
+#define LOG_DISABLE_DLT_FOR_CONTEXT(context) std::get<1>(context.m_contexts).disable();
+
 namespace logging {
 
 class DltLogData;
@@ -84,9 +87,18 @@ public:
 
 	}
 
+	void disable(){
+		manuallyDisabled = true;
+	}
+
+	void enable(){
+		manuallyDisabled = false;
+	}
+
 private:
 	LogContextCommon* m_context = nullptr;
 
+	bool manuallyDisabled = false;
 	friend class DltLogData;
 };
 
@@ -103,7 +115,7 @@ public:
 		m_data = &data;
 		m_context = &context;
 		auto dltLogLevel = m_context->getDLTLogLevel( m_data->getLogLevel() );
-		m_enabled = (dlt_user_log_write_start(m_context, this, dltLogLevel) > 0);
+		m_enabled = !context.manuallyDisabled && (dlt_user_log_write_start(m_context, this, dltLogLevel) > 0);
 	}
 
 	virtual ~DltLogData() {
@@ -155,6 +167,8 @@ private:
 };
 
 inline bool DltContextClass::isEnabled(LogLevel logLevel) const {
+	if(manuallyDisabled)
+		return false;
 #ifdef DLT_2_9
 	DltContextData d;
 	return dlt_user_log_write_start( this, &d, getDLTLogLevel(logLevel) );

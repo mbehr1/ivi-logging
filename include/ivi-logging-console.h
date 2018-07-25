@@ -60,7 +60,10 @@ public:
 		std::lock_guard<std::mutex> lock(m_outputMutex);
 		auto file = getFile(data);
 		if (file) {
-			fprintf(file, "%s\n", s);
+			if (toFile) 
+				fprintf(file, "%s\n", s);
+			else
+				fprintf(file, "%s", s);
 			fflush(file);
 		}
 	}
@@ -71,6 +74,9 @@ private:
 	static std::mutex m_outputMutex;
 	LogContextCommon* m_context = nullptr;
 	LogLevel m_level = LogLevel::Debug;
+
+protected:
+	bool toFile=false;
 };
 
 /**

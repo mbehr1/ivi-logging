@@ -19,7 +19,8 @@ LogDataType& operator<<(LogDataType& log, const std::vector<ElementType>& v) {
 	log << "[ ";
 	for (auto& element : v) {
 		log << element;
-		log << ", ";
+		if(element != *std::prev(v.end()))
+			log << ", ";
 	}
 	log << "]";
 	return log;
@@ -34,7 +35,9 @@ LogDataType& operator<<(LogDataType& log, const T<K,V,H...>& v) {
 		log << element.first;
 		log << " = ";
 		log << element.second;
-		log << " }, ";
+		log << " }";
+		if (element != *std::prev(v.end()))
+			log << ", ";
 	}
 	log << " ] ";
 	return log;

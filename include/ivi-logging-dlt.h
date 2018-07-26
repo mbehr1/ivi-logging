@@ -6,8 +6,8 @@
 
 #include "ivi-logging-common.h"
 
-#define LOG_ENABLE_DLT_FOR_CONTEXT(context) std::get<1>(context.m_contexts).enable();
-#define LOG_DISABLE_DLT_FOR_CONTEXT(context) std::get<1>(context.m_contexts).disable();
+#define LOG_ENABLE_DLT_FOR_CONTEXT(context) std::get<logging::DltContextClass>(context.m_contexts).enable();
+#define LOG_DISABLE_DLT_FOR_CONTEXT(context) std::get<logging::DltContextClass>(context.m_contexts).disable();
 
 namespace logging {
 

@@ -30,13 +30,14 @@ template<typename K,typename V,typename... H, template <typename...> class T, cl
 		 typename std::enable_if< std::is_same< std::pair<const K,V> , typename T < K, V, H ... >::value_type >::value>::type>
 LogDataType& operator<<(LogDataType& log, const T<K,V,H...>& v) {
 	log << " [ ";
+	std::size_t n = v.size();
 	for (auto& element : v) {
 		log << " { ";
 		log << element.first;
 		log << " = ";
 		log << element.second;
 		log << " }";
-		if (element != *std::prev(v.end()))
+		if(--n)
 			log << ", ";
 	}
 	log << " ] ";

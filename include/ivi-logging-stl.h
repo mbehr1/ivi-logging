@@ -19,37 +19,25 @@ LogDataType& operator<<(LogDataType& log, const std::vector<ElementType>& v) {
 	log << "[ ";
 	for (auto& element : v) {
 		log << element;
-		log << ", ";
+		if(element != *std::prev(v.end()))
+			log << ", ";
 	}
 	log << "]";
 	return log;
 }
 
-template<typename KeyType, typename ValueType, class LogDataType = logging::LogData, typename =
-		 typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
-LogDataType& operator<<(LogDataType& log, const std::map<KeyType, ValueType>& v) {
+template<typename K,typename V,typename... H, template <typename...> class T, class LogDataType = logging::LogData, typename =
+		 typename std::enable_if< std::is_same< std::pair<const K,V> , typename T < K, V, H ... >::value_type >::value>::type>
+LogDataType& operator<<(LogDataType& log, const T<K,V,H...>& v) {
 	log << " [ ";
 	for (auto& element : v) {
 		log << " { ";
 		log << element.first;
 		log << " = ";
 		log << element.second;
-		log << " }, ";
-	}
-	log << " ] ";
-	return log;
-}
-
-template<typename KeyType, typename ValueType, class LogDataType = logging::LogData, typename =
-		 typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
-LogDataType& operator<<(LogDataType& log, const std::unordered_map<KeyType, ValueType>& v) {
-	log << " [ ";
-	for (auto& element : v) {
-		log << " { ";
-		log << element.first;
-		log << " = ";
-		log << element.second;
-		log << " }, ";
+		log << " }";
+		if (element != *std::prev(v.end()))
+			log << ", ";
 	}
 	log << " ] ";
 	return log;

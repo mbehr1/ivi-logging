@@ -31,6 +31,8 @@ public:
         assert(getFileStatic() != nullptr);
     }
 
+    FileLogContext(){toFile=true;}
+
 private:
     static FILE*& getFileStatic() {
         static FILE* m_file;

@@ -64,6 +64,7 @@ set(INCLUDE_FILES
 	include/ivi-logging-null.h
 	include/ivi-logging-utils.h
 	include/ivi-no-logging.h
+	include/ivi-logging-syslog.h
 	${CMAKE_CURRENT_BINARY_DIR}/ivi-logging-config.h
 )
 

@@ -25,9 +25,10 @@ public:
     }
 
     static void setFilePath(const char* fileName) {
-        if (getFileStatic() == nullptr) {
-            getFileStatic() = fopen(fileName, "w");
+        if (getFileStatic() != nullptr) {
+            fclose(getFileStatic());
         }
+        getFileStatic() = fopen(fileName, "w");
         assert(getFileStatic() != nullptr);
     }
 

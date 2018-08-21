@@ -26,8 +26,9 @@ LogDataType& operator<<(LogDataType& log, const std::vector<ElementType>& v) {
 	return log;
 }
 
-template<typename K,typename V,typename... H, template <typename...> class T, class LogDataType = logging::LogData, typename =
-		 typename std::enable_if< std::is_same< std::pair<const K,V> , typename T < K, V, H ... >::value_type >::value>::type>
+template<typename K,typename V,typename... H, template <typename...> class T, class LogDataType,
+			typename = typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type,
+			typename = typename std::enable_if< std::is_same< std::pair<const K,V> , typename T < K, V, H ... >::value_type >::value>::type>
 LogDataType& operator<<(LogDataType& log, const T<K,V,H...>& v) {
 	log << " [ ";
 	std::size_t n = v.size();

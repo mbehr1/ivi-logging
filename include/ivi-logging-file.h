@@ -35,9 +35,17 @@ public:
     FileLogContext(){toFile=true;}
 
 private:
+    struct FileWrapper{
+        FILE* m_file=nullptr;
+        ~FileWrapper(){
+            if (m_file != nullptr) {
+                fclose(m_file);
+            }
+        }
+    };
     static FILE*& getFileStatic() {
-        static FILE* m_file;
-        return m_file;
+        static FileWrapper wrapper;
+        return wrapper.m_file;
     }
 
 };

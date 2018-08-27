@@ -42,6 +42,11 @@ private:
                 fclose(m_file);
             }
         }
+        FileWrapper() = default;
+        FileWrapper(const FileWrapper&) = delete;
+        FileWrapper(FileWrapper&&) = delete;
+        FileWrapper& operator=(const FileWrapper&) = delete;
+        FileWrapper& operator=(FileWrapper&&) = delete;
     };
     static FILE*& getFileStatic() {
         static FileWrapper wrapper;

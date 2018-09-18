@@ -1,10 +1,10 @@
 #include "stdint.h"
 #include "stdio.h"
 #include "ivi-logging-console.h"
+#include "ivi-logging-thread.h"
 #include <string>
 #include <dirent.h>
 #include <sys/ioctl.h>
-#include <pthread.h>
 
 namespace logging
 {
@@ -18,7 +18,7 @@ std::mutex StreamLogContextAbstract::m_outputMutex;
 
 std::atomic_int ThreadInformation::sNextID = ATOMIC_VAR_INIT(0);
 
-#ifdef __GNUC_PREREQ &&__GNUC_PREREQ(4, 8)
+#ifdef __GNUC_PREREQ && (__GNUC_PREREQ(4, 8))
 // Note the the initialization of a "thread_local" variable occurs during the first access to it, which is not what we would like, since we
 // would like our thread ID to be set as soon as a new thread is spawned. TODO : check how to achieve that.
 static thread_local ThreadInformation threadID__;
@@ -132,7 +132,7 @@ std::string getProcessName(pid_t pid)
 const char *ThreadInformation::getName() const
 {
     std::array<char, 64> buffer;
-    auto ret = pthread_getname_np(pthread_self(), buffer.data(), buffer.size());
+    auto ret = thread_getname(buffer.data(), buffer.size());
     if (ret != 0)
         buffer[0] = 0;
     m_name = buffer.data();

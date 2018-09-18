@@ -4,12 +4,14 @@ add_library( ${LIB_NAME} SHARED
 	${DLT_LIBRARY_FILES}
 )
 
+find_package(Threads REQUIRED)
+
 set_target_properties(${LIB_NAME} PROPERTIES VERSION ${VERSION} SOVERSION ${PROJECT_MAJOR_VERSION})
 
 TARGET_LINK_LIBRARIES( ${LIB_NAME}
-   ${DLT_LIBRARIES}
-   ${CPP_LIBS}
-   pthread
+  ${DLT_LIBRARIES}
+  ${CPP_LIBS}
+  Threads::Threads
 )
 
 INSTALL(TARGETS ${LIB_NAME}

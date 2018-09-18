@@ -3,6 +3,8 @@
 
 #pragma once
 
+namespace logging
+{
 // TODO: At the moment we are only stubbing the implementation of the functions. If backtracing is
 // required some functionality has to be provided. For instance, for Android "unwind.h" could be
 // considered
@@ -24,3 +26,4 @@ void backtrace_symbols_fd(void *const * /*array*/, int /*size*/, int /*fd*/)
 {
     /* None */
 }
+} // namespace logging

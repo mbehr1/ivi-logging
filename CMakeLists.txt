@@ -68,6 +68,9 @@ set(INCLUDE_FILES
 	include/ivi-logging-utils.h
 	include/ivi-no-logging.h
 	include/ivi-logging-syslog.h
+	include/ivi-logging-android.h
+	include/ivi-logging-backtrace.h
+	include/ivi-logging-thread.h
 	${CMAKE_CURRENT_BINARY_DIR}/ivi-logging-config.h
 )
 

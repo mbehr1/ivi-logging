@@ -26,7 +26,7 @@ class AndroidLogData : public StreamLogData
 {
     const std::string _id = "IVIL";
 
-    static int getSyslogLevel(LogLevel logLevel)
+    static int getAndroidLogLevel(LogLevel logLevel)
     {
         int v = ANDROID_LOG_INFO;
         switch (logLevel)
@@ -59,7 +59,7 @@ class AndroidLogData : public StreamLogData
   public:
     ~AndroidLogData()
     {
-        __android_log_print(getSyslogLevel(m_data->getLogLevel()), _id.c_str(), "%s", data.c_str());
+        __android_log_print(getAndroidLogLevel(m_data->getLogLevel()), _id.c_str(), "%s", data.c_str());
     }
     void addData(std::string data) { this->data += data; }
 

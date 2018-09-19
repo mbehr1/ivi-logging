@@ -16,9 +16,12 @@ set(PACKAGE_VERSION ${VERSION})
 OPTION( ENABLE_DLT_BACKEND "Include DLT as default logging backend" OFF )
 OPTION( ENABLE_CONSOLE_BACKEND "Include console as default logging backend" ON )
 
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
+
 # Dependencies
-FIND_PACKAGE(PkgConfig REQUIRED)
-if (ENABLE_DLT_BACKEND)
+FIND_PACKAGE(PkgConfig)
+if (ENABLE_DLT_BACKEND AND PKG_CONFIG_FOUND)
 	pkg_check_modules(DLT REQUIRED automotive-dlt)
 	add_definitions(${DLT_CFLAGS_OTHER})
 	include_directories(${DLT_INCLUDE_DIRS})
@@ -65,6 +68,9 @@ set(INCLUDE_FILES
 	include/ivi-logging-utils.h
 	include/ivi-no-logging.h
 	include/ivi-logging-syslog.h
+	include/ivi-logging-android.h
+	include/ivi-logging-backtrace.h
+	include/ivi-logging-thread.h
 	${CMAKE_CURRENT_BINARY_DIR}/ivi-logging-config.h
 )
 
@@ -95,8 +101,13 @@ endif()
 
 add_subdirectory (src)
 
-add_subdirectory (test)
+if(BUILDTEST)
+	add_subdirectory (test)
+endif()
 
 add_subdirectory (examples)
-add_subdirectory (doc)
+
+if(BUILDDOC)
+	add_subdirectory (doc)
+endif()
 

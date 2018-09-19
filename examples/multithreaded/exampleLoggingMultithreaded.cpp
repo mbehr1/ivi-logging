@@ -1,4 +1,5 @@
 #include "logging-multithreaded.h"
+#include "ivi-logging-thread.h"
 #include <thread>
 
 // If an application is not multi-instance, we can define its unique identifier
@@ -9,26 +10,31 @@ LOG_DECLARE_DEFAULT_CONTEXT(mainContext, "MAIN", "This is a description of that 
 
 static const int DURATION = 1000;
 
-void loop(const char * threadName) {
-	for(int i = DURATION ; i>0 ; i--) {
-        log_debug() << "Hello from " << threadName;
-        sleep(1);
-    }
+void loop(const char *threadName)
+{
+	for (int i = DURATION; i > 0; i--)
+	{
+		log_debug() << "Hello from " << threadName;
+		sleep(1);
+	}
 }
 
-void thread1() {
+void thread1()
+{
 	auto threadName = "Thread1";
-	pthread_setname_np(pthread_self(), threadName);
+	logging::thread_setname(threadName);
 	loop(threadName);
 }
 
-void thread2() {
+void thread2()
+{
 	auto threadName = "Thread2";
-	pthread_setname_np(pthread_self(), threadName);
+	logging::thread_setname(threadName);
 	loop(threadName);
 }
 
-int main(int, char **) {
+int main(int, char **)
+{
 	log_debug() << "Hello from main thread";
 	std::thread t1(thread1);
 	std::thread t2(thread2);

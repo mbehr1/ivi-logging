@@ -59,7 +59,10 @@ class AndroidLogData : public StreamLogData
   public:
     ~AndroidLogData()
     {
-        __android_log_print(getAndroidLogLevel(m_data->getLogLevel()), _id.c_str(), "%s", data.c_str());
+        if (data.length() > 0)
+        {
+            __android_log_print(getAndroidLogLevel(m_data->getLogLevel()), _id.c_str(), "%s", data.c_str());
+        }
     }
     void addData(std::string data) { this->data += data; }
 

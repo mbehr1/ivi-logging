@@ -22,63 +22,69 @@ find_package(Threads REQUIRED)
 # Dependencies
 FIND_PACKAGE(PkgConfig)
 if (ENABLE_DLT_BACKEND AND PKG_CONFIG_FOUND)
-	pkg_check_modules(DLT REQUIRED automotive-dlt)
-	add_definitions(${DLT_CFLAGS_OTHER})
-	include_directories(${DLT_INCLUDE_DIRS})
-	link_directories(${DLT_LIBRARY_DIRS})
+    pkg_check_modules(DLT REQUIRED automotive-dlt)
+    add_definitions(${DLT_CFLAGS_OTHER})
+    include_directories(${DLT_INCLUDE_DIRS})
+    link_directories(${DLT_LIBRARY_DIRS})
 
-	set(ADDITIONAL_PKGCONFIG_DEPENDENCIES automotive-dlt)
-	set(BACKEND_DEFINES "#define IVI_LOGGING_DLT_AVAILABLE")
+    set(ADDITIONAL_PKGCONFIG_DEPENDENCIES automotive-dlt)
+    set(BACKEND_DEFINES "#define IVI_LOGGING_DLT_AVAILABLE")
 
-	set(DLT_OR_NULL DltContextClass)
+    set(DLT_OR_NULL DltContextClass)
 
 else()
-	set(DLT_OR_NULL NullLogContext)
+    set(DLT_OR_NULL NullLogContext)
 endif()
 
 if (ENABLE_CONSOLE_BACKEND)
-	set(CONSOLE_OR_NULL DefaultConsoleLogContext)
+    set(CONSOLE_OR_NULL DefaultConsoleLogContext)
 else()
-	set(CONSOLE_OR_NULL NullLogContext)
+    set(CONSOLE_OR_NULL NullLogContext)
 endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.1)
-	set(CMAKE_CXX_STANDARD 14)
+    set(CMAKE_CXX_STANDARD 14)
 else()
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14")
 endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-variadic-macros -Wno-vla-extension -Wno-gnu-zero-variadic-macro-arguments")
 
 include_directories(
-	include
-	${CMAKE_CURRENT_BINARY_DIR}
+    include
+    ${CMAKE_CURRENT_BINARY_DIR}
 )
 
 configure_file(include/ivi-logging-config.h.in ivi-logging-config.h @ONLY)
 
+if (${CMAKE_SYSTEM_NAME} MATCHES "Android")
+    set(ANDROID_SPECIFIC_INCLUDES 
+        include/ivi-logging-android.h
+    )
+endif()
+
 set(INCLUDE_FILES
-	include/ivi-logging.h
-	include/ivi-logging-types.h
-	include/ivi-logging-stl.h
-	include/ivi-logging-console.h
-	include/ivi-logging-file.h
-	include/ivi-logging-common.h
-	include/ivi-logging-null.h
-	include/ivi-logging-utils.h
-	include/ivi-no-logging.h
-	include/ivi-logging-syslog.h
-	include/ivi-logging-android.h
-	include/ivi-logging-backtrace.h
-	include/ivi-logging-thread.h
-	${CMAKE_CURRENT_BINARY_DIR}/ivi-logging-config.h
+    include/ivi-logging.h
+    include/ivi-logging-types.h
+    include/ivi-logging-stl.h
+    include/ivi-logging-console.h
+    include/ivi-logging-file.h
+    include/ivi-logging-common.h
+    include/ivi-logging-null.h
+    include/ivi-logging-utils.h
+    include/ivi-no-logging.h
+    include/ivi-logging-syslog.h
+    include/ivi-logging-backtrace.h
+    include/ivi-logging-thread.h
+    ${ANDROID_SPECIFIC_INCLUDES}
+    ${CMAKE_CURRENT_BINARY_DIR}/ivi-logging-config.h
 )
 
 if (${DLT_FOUND})
-	set(INCLUDE_FILES
-		${INCLUDE_FILES}
-		include/ivi-logging-dlt.h
-	)
+    set(INCLUDE_FILES
+        ${INCLUDE_FILES}
+        include/ivi-logging-dlt.h
+    )
 endif()
 
 
@@ -102,12 +108,12 @@ endif()
 add_subdirectory (src)
 
 if(BUILDTEST)
-	add_subdirectory (test)
+    add_subdirectory (test)
 endif()
 
 add_subdirectory (examples)
 
 if(BUILDDOC)
-	add_subdirectory (doc)
+    add_subdirectory (doc)
 endif()
 

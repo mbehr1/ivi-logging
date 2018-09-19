@@ -18,7 +18,13 @@ std::mutex StreamLogContextAbstract::m_outputMutex;
 
 std::atomic_int ThreadInformation::sNextID = ATOMIC_VAR_INIT(0);
 
-#ifdef __GNUC_PREREQ && (__GNUC_PREREQ(4, 8))
+#ifdef __GNUC_PREREQ
+#if (__GNUC_PREREQ(4, 8))
+#define THREAD_LOCAL_POSSIBLE
+#endif
+#endif
+
+#ifdef THREAD_LOCAL_POSSIBLE
 // Note the the initialization of a "thread_local" variable occurs during the first access to it, which is not what we would like, since we
 // would like our thread ID to be set as soon as a new thread is spawned. TODO : check how to achieve that.
 static thread_local ThreadInformation threadID__;
@@ -27,7 +33,6 @@ ThreadInformation &getThreadInformation()
     return threadID__;
 }
 #else
-
 // Alternative implementation not using "thread_local" keyword for GCC < 4.8
 
 static __thread ThreadInformation *threadID__ = nullptr;

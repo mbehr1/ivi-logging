@@ -115,12 +115,17 @@ public:
 		return m_enableThreadInfo;
 	}
 
+	bool isTimestampEnabled() const {
+		return m_enableTimestamp;
+	}
+
 	void registerContext();
 
 private:
 
 	static bool m_enableSourceCodeLocationInfo;
 	static bool m_enableThreadInfo;
+	static bool m_enableTimestamp;
 	static bool s_initialized;
 
 };

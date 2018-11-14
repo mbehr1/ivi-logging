@@ -158,12 +158,14 @@ void LogContextBase::registerContext()
     {
         m_enableSourceCodeLocationInfo = readEnvVarAsBool("LOGGING_ENABLE_SOURCE_CODE_INFORMATION");
         m_enableThreadInfo = readEnvVarAsBool("LOGGING_ENABLE_THREAD_INFORMATION");
+        m_enableTimestamp = readEnvVarAsBool("LOGGING_ENABLE_TIMESTAMP");
         s_initialized = true;
     }
 }
 
 bool LogContextBase::m_enableSourceCodeLocationInfo;
 bool LogContextBase::m_enableThreadInfo;
+bool LogContextBase::m_enableTimestamp;
 bool LogContextBase::s_initialized;
 
 ConsoleLogContext::ConsoleLogContext()

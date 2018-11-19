@@ -3,11 +3,14 @@
 #include "ivi-logging-common.h"
 #include "stdio.h"
 #include <mutex>
+#include <chrono>
 #include "ivi-logging-utils.h"
 
 namespace logging
 {
 
+static const std::chrono::time_point<std::chrono::steady_clock>
+	m_start = std::chrono::steady_clock::now();
 class StreamLogData;
 class ConsoleLogData;
 
@@ -139,6 +142,7 @@ class StreamLogData : public LogData
 	static constexpr const char *DEFAULT_SUFFIX_WITH_FILE_LOCATION = " [ %.2i | %s / %s - %d ]";
 	static constexpr const char *DEFAULT_SUFFIX_WITH_SHORT_FILE_LOCATION_WITHOUT_FUNCTION = " | %s%.0s:%d ";
 	static constexpr const char *DEFAULT_THREAD_NAME_SUFFIX = "| %.2i / %s ";
+	static constexpr const char *DEFAULT_TIMESTAMP_SUFFIX = "| %luns";
 	static constexpr const char *DEFAULT_SUFFIX_WITH_SHORT_FILE_LOCATION_WITHOUT_FUNCTION_WITH_THREAD_NAME = " [ %s%.0s - %d | %.2i-%.16s ]";
 	static constexpr const char *DEFAULT_SUFFIX_WITHOUT_FILE_LOCATION = "";
 
@@ -204,6 +208,11 @@ class StreamLogData : public LogData
 		if (m_context->isThreadInfoEnabled())
 		{
 			writeFormatted(array, m_suffixThreadNameFormat, getThreadInformation().getID(), getThreadInformation().getName());
+		}
+		if (m_context->isTimestampEnabled())
+		{
+			auto diff = std::chrono::steady_clock::now() - m_start;
+			writeFormatted(array, m_suffixTimestampFormat, diff.count());
 		}
 		return array;
 	}
@@ -290,6 +299,7 @@ class StreamLogData : public LogData
 	//	const char* m_suffixFormat = DEFAULT_SUFFIX_WITH_SHORT_FILE_LOCATION_WITHOUT_FUNCTION_WITH_THREAD_NAME;
 	const char *m_suffixFormat = DEFAULT_SUFFIX_WITH_SHORT_FILE_LOCATION_WITHOUT_FUNCTION;
 	const char *m_suffixThreadNameFormat = DEFAULT_THREAD_NAME_SUFFIX;
+	const char *m_suffixTimestampFormat = DEFAULT_TIMESTAMP_SUFFIX;
 };
 
 inline FILE *ConsoleLogContext::getFile(StreamLogData &data)

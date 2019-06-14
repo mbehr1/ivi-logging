@@ -63,7 +63,7 @@ LogDataType& operator<<(LogDataType& log, const T<K,V,H...>& v) {
 template<typename LogDataType, typename =
          typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
 LogDataType& operator<<(LogDataType& log, const std::exception& ex) {
-    log << ex.what();
+    log << ex.what() << ", excp=" << typeid(ex).name();
     return log;
 }
 

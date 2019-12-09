@@ -332,13 +332,16 @@ public:
 
     bool isEnabled(LogLevel level)
     {
-        checkContext();
+        // this function "isEnabled" might be inlined but the checkContext one should not.
+        // checkContext will only be called once for each context but not for each log
+        if (__builtin_expect(!m_bRegistered, false))
+            checkContext();
         bool enabled = false;
         for_each_in_tuple_(m_contexts, isEnabledFunctor(enabled), level);
         return enabled;
     }
 
-    void checkContext()
+    void __attribute__((noinline)) checkContext()
     {
         if (!m_bRegistered) {
             setDefaultAPPIDSIfNeeded();

@@ -12,11 +12,8 @@ namespace logging {
 
 template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
 typename std::enable_if<I == sizeof...(TupleTypes)>::type for_each_in_tuple_(
-    std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
+    std::tuple<TupleTypes...>&, Func, CallArgumentTypes&...)
 {
-    UNUSED(tpl);
-    UNUSED(func);
-    UNUSED(args...);
 }
 
 template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
@@ -242,13 +239,10 @@ public:
     class LogData : LogInfo
     {
         template <size_t I = 0, typename... CallArgumentTypes>
-        typename std::enable_if<I == sizeof...(ContextTypes)>::type for_each_init(std::tuple<LogDataTypes...>& tpl,
-            LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>& context,
-            CallArgumentTypes&... args)
+        typename std::enable_if<I == sizeof...(ContextTypes)>::type for_each_init(std::tuple<LogDataTypes...>&,
+            LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>&,
+            CallArgumentTypes&...)
         {
-            UNUSED(context);
-            UNUSED(tpl);
-            UNUSED(args...);
         }
 
         template <size_t I = 0, typename... CallArgumentTypes>

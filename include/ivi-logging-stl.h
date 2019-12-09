@@ -14,7 +14,8 @@
 namespace logging {
 
 template <typename ElementType, class LogDataType = logging::LogData,
-    typename = typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
+    typename = typename std::enable_if<!std::is_base_of<logging::NullLogData, LogDataType>::value
+        and std::is_base_of<logging::LogData, LogDataType>::value>::type>
 LogDataType& operator<<(LogDataType& log, const std::vector<ElementType>& v)
 {
     log << "[ ";
@@ -29,7 +30,8 @@ LogDataType& operator<<(LogDataType& log, const std::vector<ElementType>& v)
 }
 
 template <typename ElementType, size_t lenght, class LogDataType = logging::LogData,
-    typename = typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
+    typename = typename std::enable_if<!std::is_base_of<logging::NullLogData, LogDataType>::value
+        and std::is_base_of<logging::LogData, LogDataType>::value>::type>
 LogDataType& operator<<(LogDataType& log, const std::array<ElementType, lenght>& v)
 {
     log << "[ ";
@@ -44,7 +46,8 @@ LogDataType& operator<<(LogDataType& log, const std::array<ElementType, lenght>&
 }
 
 template <typename K, typename V, typename... H, template <typename...> class T, class LogDataType,
-    typename = typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type,
+    typename = typename std::enable_if<!std::is_base_of<logging::NullLogData, LogDataType>::value
+        and std::is_base_of<logging::LogData, LogDataType>::value>::type,
     typename
     = typename std::enable_if<std::is_same<std::pair<const K, V>, typename T<K, V, H...>::value_type>::value>::type>
 LogDataType& operator<<(LogDataType& log, const T<K, V, H...>& v)
@@ -65,7 +68,8 @@ LogDataType& operator<<(LogDataType& log, const T<K, V, H...>& v)
 }
 
 template <typename LogDataType,
-    typename = typename std::enable_if<std::is_base_of<logging::LogData, LogDataType>::value>::type>
+    typename = typename std::enable_if<!std::is_base_of<logging::NullLogData, LogDataType>::value
+        and std::is_base_of<logging::LogData, LogDataType>::value>::type>
 LogDataType& operator<<(LogDataType& log, const std::exception& ex)
 {
     log << ex.what() << ", excp=" << typeid(ex).name();

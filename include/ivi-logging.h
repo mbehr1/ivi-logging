@@ -17,12 +17,39 @@ typename std::enable_if<I == sizeof...(TupleTypes)>::type for_each_in_tuple_(
 {
 }
 
+// This recursive template definition is needed for tuple sizes >3.
+// All other tuple sizes are explicitly defined below to reduce the code size
+// (At least the compiler we do use does not seem to do this optimization...)
 template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
-    typename std::enable_if < I<sizeof...(TupleTypes)>::type for_each_in_tuple_(
-                                  std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
+    typename std::enable_if < I<sizeof...(TupleTypes) and not(I == 0 and sizeof...(TupleTypes) <= 3)>::type
+                              for_each_in_tuple_(std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
 {
     func(std::get<I>(tpl), args...);
     for_each_in_tuple_<I + 1>(tpl, func, args...);
+}
+
+template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
+    typename std::enable_if < I<sizeof...(TupleTypes) and I == 0 and sizeof...(TupleTypes) == 3>::type
+                              for_each_in_tuple_(std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
+{
+    func(std::get<0>(tpl), args...);
+    func(std::get<1>(tpl), args...);
+    func(std::get<2>(tpl), args...);
+}
+
+template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
+    typename std::enable_if < I<sizeof...(TupleTypes) and I == 0 and sizeof...(TupleTypes) == 2>::type
+                              for_each_in_tuple_(std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
+{
+    func(std::get<0>(tpl), args...);
+    func(std::get<1>(tpl), args...);
+}
+
+template <size_t I = 0, typename Func, typename... TupleTypes, typename... CallArgumentTypes>
+    typename std::enable_if < I<sizeof...(TupleTypes) and I == 0 and sizeof...(TupleTypes) == 1>::type
+                              for_each_in_tuple_(std::tuple<TupleTypes...>& tpl, Func func, CallArgumentTypes&... args)
+{
+    func(std::get<0>(tpl), args...);
 }
 
 inline std::string pointerToString(const void* p)

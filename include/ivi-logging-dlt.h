@@ -154,16 +154,21 @@ public:
 
     bool isEnabled() const { return m_enabled; }
 
-    template <typename... Args> void writeFormatted(const char* format, Args... args)
+    void writeFormatted(const char* format, va_list argsDontModify)
     {
         if (m_enabled) {
             char b[65536];
 
+            // we must not modify args:
+            va_list args;
+            va_copy(args, argsDontModify);
+
 #pragma GCC diagnostic push
             // Make sure GCC does not complain about not being able to check the format string since it is no literal string
 #pragma GCC diagnostic ignored "-Wformat-security"
-            snprintf(b, sizeof(b), format, args...);
+            vsnprintf(b, sizeof(b), format, args);
 #pragma GCC diagnostic pop
+            va_end(argsDontModify);
 
             dlt_user_log_write_utf8_string(this, b);
         }

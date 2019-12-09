@@ -5,6 +5,7 @@
 #include <string>
 
 #include "string.h"
+#include <stdarg.h>
 
 #include "ivi-logging-common.h"
 
@@ -277,9 +278,16 @@ public:
             return *this;
         }
 
-        template <typename... Args> LogData& writeFormatted(const char* format, Args... args)
+        // lets move writeFormatted to va_list args alike to prevent lots of template instantiations that
+        // add no real benefit as afterwards all those are passed to printf family anyhow...
+        LogData& writeFormatted(const char* format, ...)
         {
-            for_each_in_tuple_(m_contexts, writeFormattedFunctor(), format, args...);
+            va_list args;
+            va_start(args, format);
+            // take care: args can only be evaluated once. as we might call multiple functions
+            // those must not modify args but do a va_copy... if needed.
+            for_each_in_tuple_(m_contexts, writeFormattedFunctor(), format, args);
+            va_end(args);
             return *this;
         }
 

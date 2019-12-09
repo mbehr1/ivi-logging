@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include <chrono>
 #include <mutex>
+#include <stdarg.h>
 
 namespace logging {
 
@@ -211,29 +212,55 @@ public:
 
     LogInfo& getData() { return *m_data; }
 
-    template <typename... Args> void writeFormatted(const char* format, Args... args)
+    void writeFormatted(const char* format, va_list argsDontModify)
     {
         if (isEnabled()) {
-            writeFormatted(m_content, format, args...);
+            va_list args;
+            va_copy(args, argsDontModify);
+            writeFormatted(m_content, format, args);
+            va_end(args);
         }
     }
 
-    template <typename... Args> void writeFormatted(ByteArray& byteArray, const char* format, Args... args) const
+    void writeFormatted(const char* format, ...)
+    {
+        if (isEnabled()) {
+            va_list args;
+            va_start(args, format);
+            writeFormatted(m_content, format, args);
+            va_end(args);
+        }
+    }
+
+    void writeFormatted(ByteArray& byteArray, const char* format, va_list argsDontModify) const
     {
 
 #pragma GCC diagnostic push
         // Make sure GCC does not complain about not being able to check the format string since it is no literal string
 #pragma GCC diagnostic ignored "-Wformat-security"
-        int size = snprintf(NULL, 0, format, args...)
+        va_list args;
+        va_copy(args, argsDontModify);
+        int size = vsnprintf(NULL, 0, format, args)
             + 1; // +1 since the snprintf returns the number of characters excluding the null termination
+        va_end(args);
         size_t startOfStringIndex = byteArray.size();
         byteArray.resize(byteArray.size() + size);
         char* p = byteArray.getData() + startOfStringIndex;
-        snprintf(p, size, format, args...);
+        va_copy(args, argsDontModify);
+        vsnprintf(p, size, format, args);
+        va_end(args);
 
         // remove terminal null character
         byteArray.resize(byteArray.size() - 1);
 #pragma GCC diagnostic pop
+    }
+
+    void writeFormatted(ByteArray& byteArray, const char* format, ...) const
+    {
+        va_list args;
+        va_start(args, format);
+        writeFormatted(byteArray, format, args);
+        va_end(args);
     }
 
 protected:

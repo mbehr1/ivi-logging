@@ -18,7 +18,7 @@ public:
 
     bool isEnabled() const { return false; }
 
-    template <typename... Args> void writeFormatted(const char*, Args...) {}
+    void writeFormatted(const char*, va_list) {}
 };
 
 class NullLogContext

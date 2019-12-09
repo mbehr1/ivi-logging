@@ -283,14 +283,49 @@ public:
         {
         }
 
+        // recursive template definition for size >3
         template <size_t I = 0, typename... CallArgumentTypes>
             typename std::enable_if
-            < I<sizeof...(ContextTypes)>::type for_each_init(std::tuple<LogDataTypes...>& tpl,
+            < I<sizeof...(ContextTypes) and not(I == 0 and sizeof...(ContextTypes) <= 3)>::type for_each_init(
+                  std::tuple<LogDataTypes...>& tpl,
                   LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>& context,
                   CallArgumentTypes&... args)
         {
             std::get<I>(tpl).init(std::get<I>(context.m_contexts), args...);
             for_each_init<I + 1>(tpl, context, args...);
+        }
+
+        template <size_t I = 0, typename... CallArgumentTypes>
+            typename std::enable_if
+            < I<sizeof...(ContextTypes) and I == 0 and sizeof...(ContextTypes) == 1>::type for_each_init(
+                  std::tuple<LogDataTypes...>& tpl,
+                  LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>& context,
+                  CallArgumentTypes&... args)
+        {
+            std::get<0>(tpl).init(std::get<0>(context.m_contexts), args...);
+        }
+
+        template <size_t I = 0, typename... CallArgumentTypes>
+            typename std::enable_if
+            < I<sizeof...(ContextTypes) and I == 0 and sizeof...(ContextTypes) == 2>::type for_each_init(
+                  std::tuple<LogDataTypes...>& tpl,
+                  LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>& context,
+                  CallArgumentTypes&... args)
+        {
+            std::get<0>(tpl).init(std::get<0>(context.m_contexts), args...);
+            std::get<1>(tpl).init(std::get<1>(context.m_contexts), args...);
+        }
+
+        template <size_t I = 0, typename... CallArgumentTypes>
+            typename std::enable_if
+            < I<sizeof...(ContextTypes) and I == 0 and sizeof...(ContextTypes) == 3>::type for_each_init(
+                  std::tuple<LogDataTypes...>& tpl,
+                  LogContextT<ContextTypesClass<ContextTypes...>, ContextDataTypesClass<LogDataTypes...>>& context,
+                  CallArgumentTypes&... args)
+        {
+            std::get<0>(tpl).init(std::get<0>(context.m_contexts), args...);
+            std::get<1>(tpl).init(std::get<1>(context.m_contexts), args...);
+            std::get<2>(tpl).init(std::get<2>(context.m_contexts), args...);
         }
 
     public:

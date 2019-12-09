@@ -2,18 +2,17 @@
 
 #pragma once
 
-#include <cstdlib>
 #include <cstdio>
+#include <cstdlib>
 #include <pthread.h>
 #include <string>
 
-namespace logging
-{
+namespace logging {
 
 thread_local std::string thread_name;
 
 // get thread name
-inline int thread_getname(char *__buf, size_t __buflen)
+inline int thread_getname(char* __buf, size_t __buflen)
 {
 // if we are not on android environment assume that we can use pthread without limitations,
 // otherwise we need to take into account that some pthread functionality is dependent on the
@@ -31,7 +30,7 @@ inline int thread_getname(char *__buf, size_t __buflen)
 }
 
 // set thread name
-inline int thread_setname(const char *name)
+inline int thread_setname(const char* name)
 {
 #ifndef __BIONIC__
     return pthread_setname_np(pthread_self(), name);

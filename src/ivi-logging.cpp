@@ -1,15 +1,14 @@
-#include "stdint.h"
-#include "stdio.h"
 #include "ivi-logging-console.h"
 #include "ivi-logging-thread.h"
-#include <string>
+#include "stdint.h"
+#include "stdio.h"
 #include <dirent.h>
+#include <string>
 #include <sys/ioctl.h>
 
-namespace logging
-{
+namespace logging {
 
-AppLogContext *s_pAppLogContext = nullptr;
+AppLogContext* s_pAppLogContext = nullptr;
 
 LogLevel ConsoleLogContext::s_defaultLogLevel = LogLevel::All;
 bool ConsoleLogContext::s_envVarCheckDone = false;
@@ -28,16 +27,13 @@ std::atomic_int ThreadInformation::sNextID = ATOMIC_VAR_INIT(0);
 // Note the the initialization of a "thread_local" variable occurs during the first access to it, which is not what we would like, since we
 // would like our thread ID to be set as soon as a new thread is spawned. TODO : check how to achieve that.
 static thread_local ThreadInformation threadID__;
-ThreadInformation &getThreadInformation()
-{
-    return threadID__;
-}
+ThreadInformation& getThreadInformation() { return threadID__; }
 #else
 // Alternative implementation not using "thread_local" keyword for GCC < 4.8
 
-static __thread ThreadInformation *threadID__ = nullptr;
+static __thread ThreadInformation* threadID__ = nullptr;
 
-ThreadInformation &getThreadInformation()
+ThreadInformation& getThreadInformation()
 {
     if (threadID__ == nullptr)
         threadID__ = new ThreadInformation();
@@ -48,8 +44,7 @@ ThreadInformation &getThreadInformation()
 
 void setDefaultAPPIDSIfNeeded()
 {
-    if (s_pAppLogContext == nullptr)
-    {
+    if (s_pAppLogContext == nullptr) {
         //		fprintf(
         //			stderr,
         //			LOGGING_WARNING_OUTPUT_PREFIX
@@ -68,7 +63,7 @@ void setDefaultAPPIDSIfNeeded()
     }
 }
 
-std::string byteArrayToString(const void *buffer, size_t length)
+std::string byteArrayToString(const void* buffer, size_t length)
 {
     static char hexcode[] = "0123456789ABCDEF";
     static char textBuffer[1024];
@@ -78,11 +73,9 @@ std::string byteArrayToString(const void *buffer, size_t length)
     if (length + 1 > sizeof(textBuffer) / 3)
         length = sizeof(textBuffer) / 3;
 
-    const unsigned char *bufferAsChar =
-        static_cast<const unsigned char *>(buffer);
+    const unsigned char* bufferAsChar = static_cast<const unsigned char*>(buffer);
 
-    for (size_t byteIndex = 0; byteIndex < length; byteIndex++)
-    {
+    for (size_t byteIndex = 0; byteIndex < length; byteIndex++) {
         textBuffer[dest++] = hexcode[bufferAsChar[byteIndex] >> 4];
         textBuffer[dest++] = hexcode[bufferAsChar[byteIndex] & 0xF];
         textBuffer[dest++] = ' ';
@@ -96,11 +89,9 @@ std::string byteArrayToString(const void *buffer, size_t length)
 unsigned int StreamLogContextAbstract::getConsoleWidth()
 {
     struct ::winsize ws;
-    if (::ioctl(0, TIOCGWINSZ, &ws) == 0)
-    {
+    if (::ioctl(0, TIOCGWINSZ, &ws) == 0) {
         return ws.ws_col;
-    }
-    else
+    } else
         return 0;
 }
 
@@ -109,15 +100,13 @@ std::string getProcessName(pid_t pid)
 
     char processName[1024] = "";
 
-    DIR *dir = opendir("/proc");
-    if (dir != nullptr)
-    {
+    DIR* dir = opendir("/proc");
+    if (dir != nullptr) {
         char path[128];
         snprintf(path, sizeof(path), "/proc/%i/cmdline", pid);
-        FILE *file = fopen(path, "r");
+        FILE* file = fopen(path, "r");
 
-        if (file != nullptr)
-        {
+        if (file != nullptr) {
             size_t n = fread(processName, 1, sizeof(processName) - 1, file);
             if (n > 0)
                 processName[n - 1] = 0;
@@ -134,7 +123,7 @@ std::string getProcessName(pid_t pid)
     return processName;
 }
 
-const char *ThreadInformation::getName() const
+const char* ThreadInformation::getName() const
 {
     std::array<char, 64> buffer;
     auto ret = thread_getname(buffer.data(), buffer.size());
@@ -144,7 +133,7 @@ const char *ThreadInformation::getName() const
     return m_name.c_str();
 }
 
-static bool readEnvVarAsBool(const char *varName, bool defaultValue = false)
+static bool readEnvVarAsBool(const char* varName, bool defaultValue = false)
 {
     auto value = getenv(varName);
     if (value == nullptr)
@@ -154,8 +143,7 @@ static bool readEnvVarAsBool(const char *varName, bool defaultValue = false)
 
 void LogContextBase::registerContext()
 {
-    if (!s_initialized)
-    {
+    if (!s_initialized) {
         m_enableSourceCodeLocationInfo = readEnvVarAsBool("LOGGING_ENABLE_SOURCE_CODE_INFORMATION");
         m_enableThreadInfo = readEnvVarAsBool("LOGGING_ENABLE_THREAD_INFORMATION");
         m_enableTimestamp = readEnvVarAsBool("LOGGING_ENABLE_TIMESTAMP");
@@ -171,8 +159,7 @@ bool LogContextBase::s_initialized;
 ConsoleLogContext::ConsoleLogContext()
 {
     m_colorSupport = (getConsoleWidth() != 0);
-    if (!s_envVarCheckDone)
-    {
+    if (!s_envVarCheckDone) {
         if (!readEnvVarAsBool("LOGGING_ENABLE_CONSOLE", true))
             s_defaultLogLevel = LogLevel::None;
         s_envVarCheckDone = true;

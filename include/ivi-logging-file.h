@@ -4,27 +4,23 @@
 
 namespace logging {
 
-class FileLogData : public StreamLogData {
+class FileLogData : public StreamLogData
+{
 public:
-	~FileLogData() {
-		flushLog();
-	}
-
+    ~FileLogData() { flushLog(); }
 };
 
-class FileLogContext : public StreamLogContextAbstract {
+class FileLogContext : public StreamLogContextAbstract
+{
 public:
-	typedef FileLogData LogDataType;
+    typedef FileLogData LogDataType;
 
-    FILE* getFile(logging::StreamLogData&) override {
-        return getFileStatic();
-    }
+    FILE* getFile(logging::StreamLogData&) override { return getFileStatic(); }
 
-    static void openFile(const char* fileName) {
-        setFilePath(fileName);
-    }
+    static void openFile(const char* fileName) { setFilePath(fileName); }
 
-    static void setFilePath(const char* fileName) {
+    static void setFilePath(const char* fileName)
+    {
         if (getFileStatic() != nullptr) {
             fclose(getFileStatic());
         }
@@ -32,12 +28,14 @@ public:
         assert(getFileStatic() != nullptr);
     }
 
-    FileLogContext(){toFile=true;}
+    FileLogContext() { toFile = true; }
 
 private:
-    struct FileWrapper{
-        FILE* m_file=nullptr;
-        ~FileWrapper(){
+    struct FileWrapper
+    {
+        FILE* m_file = nullptr;
+        ~FileWrapper()
+        {
             if (m_file != nullptr) {
                 fclose(m_file);
             }
@@ -48,11 +46,10 @@ private:
         FileWrapper& operator=(const FileWrapper&) = delete;
         FileWrapper& operator=(FileWrapper&&) = delete;
     };
-    static FILE*& getFileStatic() {
+    static FILE*& getFileStatic()
+    {
         static FileWrapper wrapper;
         return wrapper.m_file;
     }
-
 };
-
 }

@@ -7,7 +7,7 @@ PROJECT(${PACKAGE})
 include(GNUInstallDirs)
 
 SET( PROJECT_MAJOR_VERSION 1 )
-SET( PROJECT_MINOR_VERSION 3 )
+SET( PROJECT_MINOR_VERSION 4 )
 SET( PROJECT_PATCH_LEVEL 0 )
 
 set(VERSION ${PROJECT_MAJOR_VERSION}.${PROJECT_MINOR_VERSION}.${PROJECT_PATCH_LEVEL})
@@ -15,6 +15,7 @@ set(PACKAGE_VERSION ${VERSION})
 
 OPTION( ENABLE_DLT_BACKEND "Include DLT as default logging backend" OFF )
 OPTION( ENABLE_CONSOLE_BACKEND "Include console as default logging backend" ON )
+OPTION( ENABLE_FUNCTION_INFO "Include capability to print function name within SourceCodeLocationInfo" OFF )
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
@@ -40,6 +41,12 @@ if (ENABLE_CONSOLE_BACKEND)
     set(CONSOLE_OR_NULL DefaultConsoleLogContext)
 else()
     set(CONSOLE_OR_NULL NullLogContext)
+endif()
+
+if (ENABLE_FUNCTION_INFO)
+    set(FUNCTION_INFO_DEFINES "#define IVI_LOGGING_FUNCTION_INFO")
+else()
+    set(FUNCTION_INFO_DEFINES "#undef IVI_LOGGING_FUNCTION_INFO")
 endif()
 
 if (CMAKE_VERSION VERSION_GREATER 3.1)
@@ -116,4 +123,3 @@ add_subdirectory (examples)
 if(BUILDDOC)
     add_subdirectory (doc)
 endif()
-

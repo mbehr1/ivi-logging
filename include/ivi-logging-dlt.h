@@ -138,8 +138,10 @@ public:
                     dlt_user_log_write_utf8_string(this, m_data->getFileName());
                 if (m_data->getLineNumber() != -1)
                     dlt_user_log_write_uint32(this, m_data->getLineNumber());
+#ifdef IVI_LOGGING_FUNCTION_INFO
                 if (m_data->getPrettyFunction() != nullptr)
                     dlt_user_log_write_utf8_string(this, m_data->getPrettyFunction());
+#endif
             }
 
             if (m_context->isThreadInfoEnabled()) {

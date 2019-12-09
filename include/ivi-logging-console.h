@@ -163,8 +163,12 @@ public:
         ByteArray array;
 
         // we ignore the env variable since we always want source code information in the console
+#ifdef IVI_LOGGING_FUNCTION_INFO
         writeFormatted(
             array, m_suffixFormat, m_data->getFileName(), m_data->getPrettyFunction(), m_data->getLineNumber());
+#else
+        writeFormatted(array, m_suffixFormat, m_data->getFileName(), "", m_data->getLineNumber());
+#endif
 
         if (m_context->isThreadInfoEnabled()) {
             writeFormatted(

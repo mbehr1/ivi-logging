@@ -61,9 +61,19 @@ private:
     std::stringstream m_stream;
 };
 
+#ifdef IVI_LOGGING_FUNCTION_INFO
+
 #define log_with_context(_context_, severity)                                                          \
     for (auto dummy = &(_context_); (dummy != nullptr) && dummy->isEnabled(severity); dummy = nullptr) \
     dummy->createLog(severity, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+
+#else
+
+#define log_with_context(_context_, severity)                                                          \
+    for (auto dummy = &(_context_); (dummy != nullptr) && dummy->isEnabled(severity); dummy = nullptr) \
+    dummy->createLog(severity, __FILE__, __LINE__, nullptr)
+
+#endif
 
 #ifndef log_error
 

@@ -5,7 +5,11 @@
 #include "ivi-logging.h"
 
 // clang-format off
+// backend defines:
 @BACKEND_DEFINES@
+
+// function info defines:
+@FUNCTION_INFO_DEFINES@
 // clang-format on
 
 #ifdef IVI_LOGGING_DLT_AVAILABLE

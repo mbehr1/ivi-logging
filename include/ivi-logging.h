@@ -3,6 +3,7 @@
 #include <functional>
 #include <sstream>
 #include <string>
+#include <vector>
 
 #include "string.h"
 #include <stdarg.h>
@@ -361,6 +362,21 @@ public:
             for_each_in_tuple_(m_contexts, writeFormattedFunctor(), format, args);
             va_end(args);
             return *this;
+        }
+
+        template <size_t N> typename std::enable_if<N != 0, LogData&>::type operator<<(const char (&v)[N])
+        {
+            bool isNullTerminated = v[N - 1] == 0x0;
+            if (isNullTerminated)
+                return operator<<((const char*)v); // cast already here to const char* instead in the ...Data classes
+            else {
+                // this is a workaround. we might as well define an output as size limited string
+                // or we might define const chars as "must be zero terminated" and dont log them otherwise
+                // we use vector here and not array to avoid too many template instantiations
+                std::vector<char>::iterator begin{ (char*)&v[0] };
+                std::vector<char> a = { begin, begin + N };
+                return operator<<(a);
+            }
         }
 
         template <typename Type> LogData& operator<<(const Type& v)

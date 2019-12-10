@@ -76,7 +76,24 @@ void myFunction() {
 
 	log_info() << "myFunction log 1";
 	log_warn() << "myFunction log 2";
+}
 
+void myFunctionCharArray()
+{
+
+    // Redefines the context to use for this scope (this function)
+    // LOG_DECLARE_DEFAULT_LOCAL_CONTEXT("CXT3", "Function-specific logging context");
+
+    struct aStruct
+    {
+        const char a[4] = { 'a', 'b', 'c', 'd' };
+        const char b[5] = { 'O', 'H', 'N', 'O', 0x0 };
+    } aS;
+
+    log_info() << "const char[4] example:" << aS.a; // this should be fixed now, but will be logged using std::vector
+    logging::StringBuilder sb;
+    sb << aS.a;
+    log_info() << "const char[4] using StringBuilder example:" << sb.str(); // TODO this is still broken!
 }
 
 int generateDataForLogging() {
@@ -98,6 +115,8 @@ int main(int, const char**) {
 	myFunction();
 
 	myFunction2();
+
+    myFunctionCharArray();
 
 	MySubClass o;
 	o.doSomething();

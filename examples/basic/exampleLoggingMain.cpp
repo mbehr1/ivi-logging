@@ -76,6 +76,7 @@ void myFunction() {
 
 	log_info() << "myFunction log 1";
 	log_warn() << "myFunction log 2";
+}
 void myFunctionCharArray()
 {
 

@@ -131,11 +131,12 @@ public:
 
     virtual ~DltLogData()
     {
-        if (isEnabled()) {
+        if (m_enabled) {
             if (m_context->isSourceCodeLocationInfoEnabled()) {
                 dlt_user_log_write_utf8_string(this, "                                                    | ");
-                if (m_data->getFileName() != nullptr)
-                    dlt_user_log_write_utf8_string(this, m_data->getFileName());
+                auto fileName = m_data->getFileName();
+                if (fileName != nullptr)
+                    dlt_user_log_write_utf8_string(this, fileName);
                 if (m_data->getLineNumber() != -1)
                     dlt_user_log_write_uint32(this, m_data->getLineNumber());
 #ifdef IVI_LOGGING_FUNCTION_INFO
@@ -192,7 +193,7 @@ inline bool DltContextClass::isEnabled(LogLevel logLevel) const
 #else
     auto dltLogLevel = getDLTLogLevel(logLevel);
     return ((this)->log_level_ptr && ((dltLogLevel) <= (int)*((this)->log_level_ptr))
-        && ((dltLogLevel) != 0)); // TODO: get that expression from the DLT itself
+        && ((dltLogLevel) != 0)); // TODO: could call dlt_user_is_logLevel_enabled
 #endif
 }
 

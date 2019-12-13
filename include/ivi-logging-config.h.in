@@ -10,6 +10,9 @@
 
 // function info defines:
 @FUNCTION_INFO_DEFINES@
+
+#cmakedefine01 IVI_LOGGING_USE_CONTEXT_CONSOLE
+#cmakedefine01 IVI_LOGGING_USE_CONTEXT_DLT
 // clang-format on
 
 #ifdef IVI_LOGGING_DLT_AVAILABLE
@@ -45,9 +48,24 @@
     };
 
     // clang-format off
+
+#if IVI_LOGGING_USE_CONTEXT_CONSOLE && IVI_LOGGING_USE_CONTEXT_DLT
     typedef LogContextT<TypeSet<@CONSOLE_OR_NULL@, @DLT_OR_NULL@>,
         TypeSet<@CONSOLE_OR_NULL@::LogDataType, @DLT_OR_NULL@::LogDataType>>
         DefaultLogContext;
+#elif !IVI_LOGGING_USE_CONTEXT_CONSOLE && IVI_LOGGING_USE_CONTEXT_DLT
+    typedef LogContextT<TypeSet<@DLT_OR_NULL@>,
+        TypeSet<@DLT_OR_NULL@::LogDataType>>
+        DefaultLogContext;
+#elif IVI_LOGGING_USE_CONTEXT_CONSOLE && !IVI_LOGGING_USE_CONTEXT_DLT
+    typedef LogContextT<TypeSet<@CONSOLE_OR_NULL@>,
+        TypeSet<@CONSOLE_OR_NULL@::LogDataType>>
+        DefaultLogContext;
+#else
+    typedef LogContextT<TypeSet<@CONSOLE_OR_NULL@>,
+        TypeSet<@CONSOLE_OR_NULL@::LogDataType>>
+        DefaultLogContext;
+#endif
 
     /// Use that type to output to the DLT if DLT is enabled, or to
     typedef LogContextT<TypeSet<@DLT_OR_NULL@>, TypeSet<@DLT_OR_NULL@::LogDataType>> DltIfEnabledLogContext;

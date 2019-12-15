@@ -89,17 +89,35 @@ private:
     std::stringstream m_stream;
 };
 
+// inspired from https://blog.galowicz.de/2016/02/20/short_file_macro. Author approved it for free usage.
+
+static constexpr const char* past_last_slash_loop(const char* const str)
+{
+    const char* last_slash = str;
+    for (const char* pos = str; *pos != 0x0; ++pos) {
+        if (*pos == '/')
+            last_slash = pos + 1;
+    }
+    return last_slash;
+}
+
+#define __SHORT_FILE__                                                              \
+    __extension__({                                                                 \
+        constexpr const char* const sf_{ logging::past_last_slash_loop(__FILE__) }; \
+        sf_;                                                                        \
+    })
+
 #ifdef IVI_LOGGING_FUNCTION_INFO
 
 #define log_with_context(_context_, severity)                                                          \
     for (auto dummy = &(_context_); (dummy != nullptr) && dummy->isEnabled(severity); dummy = nullptr) \
-    dummy->createLog(severity, __FILE__, __LINE__, __PRETTY_FUNCTION__)
+    dummy->createLog(severity, __SHORT_FILE__, __LINE__, __PRETTY_FUNCTION__)
 
 #else
 
 #define log_with_context(_context_, severity)                                                          \
     for (auto dummy = &(_context_); (dummy != nullptr) && dummy->isEnabled(severity); dummy = nullptr) \
-    dummy->createLog(severity, __FILE__, __LINE__, nullptr)
+    dummy->createLog(severity, __SHORT_FILE__, __LINE__, nullptr)
 
 #endif
 

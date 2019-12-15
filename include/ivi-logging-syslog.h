@@ -20,7 +20,7 @@ public:
 
 class SyslogLogData : public StreamLogData
 {
-    static int getSyslogLevel(LogLevel logLevel)
+    static constexpr int getSyslogLevel(LogLevel logLevel)
     {
         int v = LOG_INFO;
         switch (logLevel) {

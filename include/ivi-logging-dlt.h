@@ -27,7 +27,7 @@ public:
 
     bool isEnabled(LogLevel logLevel) const;
 
-    static DltLogLevelType getDLTLogLevel(LogLevel level)
+    static constexpr DltLogLevelType getDLTLogLevel(LogLevel level)
     {
         DltLogLevelType v = DLT_LOG_DEFAULT;
         switch (level) {

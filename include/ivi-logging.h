@@ -91,7 +91,9 @@ private:
 
 // inspired from https://blog.galowicz.de/2016/02/20/short_file_macro. Author approved it for free usage.
 
-static constexpr const char* past_last_slash_loop(const char* const str)
+#if __cplusplus >= 201402L
+
+static constexpr const char* past_last_slash(const char* const str)
 {
     const char* last_slash = str;
     for (const char* pos = str; *pos != 0x0; ++pos) {
@@ -100,12 +102,27 @@ static constexpr const char* past_last_slash_loop(const char* const str)
     }
     return last_slash;
 }
-
-#define __SHORT_FILE__                                                              \
-    __extension__({                                                                 \
-        constexpr const char* const sf_{ logging::past_last_slash_loop(__FILE__) }; \
-        sf_;                                                                        \
+#define __SHORT_FILE__                                                         \
+    __extension__({                                                            \
+        constexpr const char* const sf_{ logging::past_last_slash(__FILE__) }; \
+        sf_;                                                                   \
     })
+
+#else
+
+static constexpr const char* past_last_slash(const char* const str, const char* const last_slash)
+{
+    return *str == '\0' ? last_slash
+                        : *str == '/' ? past_last_slash(str + 1, str + 1) : past_last_slash(str + 1, last_slash);
+}
+
+#define __SHORT_FILE__                                                                   \
+    __extension__({                                                                      \
+        constexpr const char* const sf_{ logging::past_last_slash(__FILE__, __FILE__) }; \
+        sf_;                                                                             \
+    })
+
+#endif
 
 #ifdef IVI_LOGGING_FUNCTION_INFO
 
